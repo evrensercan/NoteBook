@@ -27,3 +27,9 @@ Bu projeyi bilgisayarınızda çalıştırmak için **Docker Desktop** yüklü o
 1. **Projeyi İndirin:**
    ```bash
    git clone [https://github.com/evrensercan/NooteBook.git](https://github.com/evrensercan/NooteBook.git)
+
+## 🖥️ Uygulama Ekran Görüntüsü
+
+Aşağıda projenin çalışan haline ait bir ekran görüntüsü yer almaktadır:
+
+![NooteBook Uygulama Ekranı](screenshots/uygulama.png)
