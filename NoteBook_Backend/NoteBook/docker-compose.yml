@@ -1,0 +1,31 @@
+services:
+  # 1- API Servisi
+  notebook-api:
+    build: . # Dockerfile burada demek
+    ports:
+      - "5000:8080" # Dışarıdan 5000 portuyla bağlanacağız
+    depends_on:
+      - sql-server # SQL açılmadan API açılmasın demek
+    container_name: 
+      notebook_container #Konteynerin adı
+    environment:
+      # İPUCU: Buraya geliştirme ortamında olduğumuzu söyleyen standart .NET değişkenini yazacağız.
+      # Genelde "Development" yazarız. Değişken adı: ASPNETCORE_ENVIRONMENT
+      - ASPNETCORE_ENVIRONMENT=Development # BURAYI SEN DOLDUR (Development mi Production mı?)
+
+  # 2- SQL Server Servisi
+  sql-server:
+    image: mcr.microsoft.com/mssql/server:2022-latest # SQL Server imajı
+    container_name: sql_server_container
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=Sifre123!_ # Şifre seçtik
+    ports:
+      - "1433:1433"
+
+  # 3- Frontend Servisi
+  notebook-frontend:
+    build: ../NoteBook_Frontend 
+    ports:
+      - "80:80" # İnternetin standart kapısı 80'dir.
+    container_name: notebook_frontend_container

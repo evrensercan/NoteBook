@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>NooteBookkkkkkkkkkkkkk</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        button {
+            display: block;
+            margin: 20px auto;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        #notlar {
+            display: block;
+            margin: 20px auto;
+            width: 30%;
+            height: 300px;
+            padding: 10px;
+            font-size: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        #baslik {
+            display: block;
+            margin: 20px auto;
+            width: 30%;
+            height: 50px;
+            padding: 10px;
+            font-size: 24px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: none;
+        }
+
+        #silButonu {
+            background-color: #f44336;
+            margin-right: 15px;
+            width: 7%;
+            height: 2%;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1>📝NooteBook</h1>
+        <textarea id="baslik" name="title" placeholder="Başlık girin..."></textarea>
+        <textarea id="notlar" name="not" placeholder="İçerik girin..."></textarea>
+        <button onclick="notEkle()">Kaydet</button>
+        <div id="listeKutusu">
+            <button onclick="notSil(not.id)" id="silButonu">🗑️Sil</button>
+        </div>
+    </div>
+
+    <script>
+        // [1] VERİ EKLEME FONKSİYONU
+        async function notEkle() {
+
+            // Verileri kutulardan al
+            var baslikVerisi = document.getElementById("baslik").value;
+            var icerikVerisi = document.getElementById("notlar").value;
+
+            // Paketi hazırla
+            var paket = {
+                id: 0,
+                title: baslikVerisi,
+                contents: icerikVerisi
+            };
+
+            // API'ye Kargola (Fetch)
+            try {
+                await fetch("http://localhost:5000/Not", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify(paket)
+                });
+
+                // Başarı Mesajı
+                alert("✅ Not başarıyla eklendi!");
+
+                // Kutuları temizle
+                document.getElementById("baslik").value = "";
+                document.getElementById("notlar").value = "";
+                notlariListele();
+
+                // Hata Yakalama
+            } catch (hata) {
+                console.error("Hata:", hata);
+                alert("Bir hata oluştu! Konsola bak.");
+            }
+        }
+
+        // [2] VERİ LİSTELEME FONKSİYONU
+        async function notlariListele() {
+
+            // API'den Veri Çek
+            var cevap = await fetch("http://localhost:5000/Not");
+
+            // Cevabı JSON'a Çevir
+            var notlar = await cevap.json();
+
+            // HTML Kutusunu Seç
+            var kutu = document.getElementById("listeKutusu");
+            kutu.innerHTML = ""; // Önceki içeriği temizle
+
+
+            // Listeyi Döngüyle Yazdır
+            notlar.forEach(not => {
+                var kart = `
+            <div style="border:1px solid black; margin:10px; padding:10px;">
+                <h3> ${not.title} </h3>  
+                <p>  ${not.contents} </p>  
+                <button onclick="notSil(${not.id})" id="silButonu">🗑️Sil</button>
+
+            </div>`;
+                kutu.innerHTML += kart;
+            });
+        }
+
+        // [3] VERİ SİLME FONKSİYONU
+        async function notSil(silinecekId) {
+
+            // Kullanıcıya soralım, yanlışlıkla silmesin
+            if (!confirm("Bu notu gerçekten silmek istiyor musun?")) return;
+
+            try {
+                // Silme adresi şöyledir: http://localhost:5000/Not/5
+                var silmeAdresi = "http://localhost:5000/Not/" + silinecekId;
+
+                await fetch(silmeAdresi, {
+                    method: "DELETE" // Silme Metodu
+                });
+
+                alert("Not Silindi!");
+
+                // Listeyi tekrar çek (Silinen ekrandan gitsin)
+                notlariListele();
+
+
+            } catch (hata) {
+                console.error("Silme Hatası:", hata);
+                alert("Silinemedi!");
+            }
+        }
+
+        notlariListele();
+    </script>
+</body>
+
+</html>
