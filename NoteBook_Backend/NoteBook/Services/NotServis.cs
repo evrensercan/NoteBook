@@ -8,11 +8,12 @@ namespace NoteBook.Services
         private readonly string baglantiCumlesi;
         public NotServis(IConfiguration configuration)
         {
-            baglantiCumlesi = "Server=sql-server;Database=master;User Id=sa;Password=Sifre123!_;TrustServerCertificate=True;";
+            baglantiCumlesi = configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("'DefaultConnection' bağlantı cümlesi tanımlı değil.");
         }
 
-        // CREATE - EKleme
-        public void Create(Notes not) //Notes model adı not, metoddaki geçici ismi
+        // CREATE - Ekleme
+        public void Create(Notes not)
         {
             using (SqlConnection baglanti = new SqlConnection(baglantiCumlesi))
             {
@@ -34,7 +35,6 @@ namespace NoteBook.Services
             using (SqlConnection baglanti = new SqlConnection(baglantiCumlesi))
             {
                 baglanti.Open();
-                // Soru: Tüm notları getirecek SQL komutu neydi? "SELECT ..."
                 SqlCommand sorgu = new SqlCommand("SELECT Id, Title, Contents FROM [NOT]", baglanti);
 
                 using (SqlDataReader oku = sorgu.ExecuteReader())

@@ -8,7 +8,12 @@ namespace NoteBook.Controllers
     [Route("[controller]")]
     public class NotController : ControllerBase
     {
-        private NotServis _servis = new NotServis(null);
+        private readonly NotServis _servis;
+
+        public NotController(NotServis servis)
+        {
+            _servis = servis;
+        }
 
         // CREATE -POST- EKleme
         [HttpPost]
